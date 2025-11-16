@@ -1,5 +1,23 @@
 # 🖼️ Google Drive Image Uploader for Obsidian 🔮
 
+Upload images into your notes with a simple paste or drag — automatically stored on **Google Drive**, made public, and embedded as ready-to-use Markdown.
+
+![Obsidian](https://img.shields.io/badge/Obsidian-Plugin-7D5EF7?logo=obsidian&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-5.3-blue?logo=typescript)
+![Google Drive API](https://img.shields.io/badge/Google%20Drive%20API-v3-34A853?logo=google-drive&logoColor=white)
+![OAuth2](https://img.shields.io/badge/OAuth2-Device%20Flow-orange)
+![License](https://img.shields.io/badge/License-MIT-green)
+![Version](https://img.shields.io/badge/version-1.0.0-blue)
+![Build](https://img.shields.io/badge/build-passing-brightgreen)
+![Maintained](https://img.shields.io/badge/Maintained-Yes-success)
+
+![Uploads to Drive](https://img.shields.io/badge/Uploads-Google%20Drive-4285F4?logo=google-drive&logoColor=white)
+![CDN](https://img.shields.io/badge/CDN-lh3.googleusercontent.com-important)
+![Fallback](https://img.shields.io/badge/Fallback-alt%3Dmedia%20%2B%20Local-yellow)
+![Drag & Paste](https://img.shields.io/badge/Paste%2FDragDrop-Supported-blueviolet)
+![Public Files](https://img.shields.io/badge/Permissions-Auto%20Public-green)
+![Quota Friendly](https://img.shields.io/badge/Drive%20API-Free%20Tier%20Friendly-success)
+
 A simple plugin that lets you **paste or drag images into Obsidian**, and it will automatically:
 
 1. **Upload the image to your Google Drive**
@@ -345,6 +363,10 @@ If the upload fails or you’re offline:
 | 4 | It inserts Markdown | `![](https://lh3.googleusercontent.com/d/FILE_ID)` |
 | 5 | If that fails | It tries `alt=media&key=API_KEY` |
 | 6 | Final fallback | Saves to local folder |
+
+> Paste or drag an image → plugin uploads to Drive → makes it public → inserts  
+> `![](https://lh3.googleusercontent.com/d/FILE_ID)`  
+> with **alt=media** and **local vault** as smart fallbacks.
 
 ---
 
