@@ -1,11 +1,11 @@
 {
-	"id": "sample-plugin",
-	"name": "Sample Plugin",
-	"version": "1.0.0",
-	"minAppVersion": "0.15.0",
-	"description": "Demonstrates some of the capabilities of the Obsidian API.",
-	"author": "Obsidian",
-	"authorUrl": "https://obsidian.md",
-	"fundingUrl": "https://obsidian.md/pricing",
-	"isDesktopOnly": false
+  "id": "obsidian-drive-image-uploader",
+  "name": "Drive Image Uploader",
+  "version": "0.1.0",
+  "minAppVersion": "1.5.0",
+  "description": "Paste/drag images → upload to Google Drive → embed a working URL (lh3.googleusercontent.com). Falls back to alt=media or local save.",
+  "author": "Maurilio",
+  "authorUrl": "https://mpatino-digital-garden.vercel.app/",
+  "isDesktopOnly": true,
+  "main": "main.js"
 }
