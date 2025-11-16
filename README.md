@@ -1,94 +1,392 @@
-# Obsidian Sample Plugin
+# 🖼️ Google Drive Image Uploader for Obsidian 🔮
 
-This is a sample plugin for Obsidian (https://obsidian.md).
+A simple plugin that lets you **paste or drag images into Obsidian**, and it will automatically:
 
-This project uses TypeScript to provide type checking and documentation.
-The repo depends on the latest plugin API (obsidian.d.ts) in TypeScript Definition format, which contains TSDoc comments describing what it does.
+1. **Upload the image to your Google Drive**
+2. **Make it public (anyone with the link → Viewer)**
+3. **Insert a working image link**  
+   → `![](https://lh3.googleusercontent.com/d/FILE_ID)`  
+4. If that fails, it tries a backup link:  
+   → `https://www.googleapis.com/drive/v3/files/FILE_ID?alt=media&key=YOUR_API_KEY`  
+5. If all else fails, it **saves the image locally** in your vault (so you never lose it).
 
-This sample plugin demonstrates some of the basic functionality the plugin API can do.
-- Adds a ribbon icon, which shows a Notice when clicked.
-- Adds a command "Open Sample Modal" which opens a Modal.
-- Adds a plugin setting tab to the settings page.
-- Registers a global click event and output 'click' to the console.
-- Registers a global interval which logs 'setInterval' to the console.
+---
 
-## First time developing plugins?
+## ✨ Why use this
 
-Quick starting guide for new plugin devs:
+- Works fully inside Obsidian Preview (tested).
+- No need for Imgur or third-party hosts.
+- You stay in control — your images live in your own Google Drive.
+- Smart fallback: Drive CDN → API → local.
 
-- Check if [someone already developed a plugin for what you want](https://obsidian.md/plugins)! There might be an existing plugin similar enough that you can partner up with.
-- Make a copy of this repo as a template with the "Use this template" button (login to GitHub if you don't see it).
-- Clone your repo to a local development folder. For convenience, you can place this folder in your `.obsidian/plugins/your-plugin-name` folder.
-- Install NodeJS, then run `npm i` in the command line under your repo folder.
-- Run `npm run dev` to compile your plugin from `main.ts` to `main.js`.
-- Make changes to `main.ts` (or create new `.ts` files). Those changes should be automatically compiled into `main.js`.
-- Reload Obsidian to load the new version of your plugin.
-- Enable plugin in settings window.
-- For updates to the Obsidian API run `npm update` in the command line under your repo folder.
+### About Google Drive API
 
-## Releasing new releases
+The Drive API itself has a **generous free tier**.
 
-- Update your `manifest.json` with your new version number, such as `1.0.1`, and the minimum Obsidian version required for your latest release.
-- Update your `versions.json` file with `"new-plugin-version": "minimum-obsidian-version"` so older versions of Obsidian can download an older version of your plugin that's compatible.
-- Create new GitHub release using your new version number as the "Tag version". Use the exact version number, don't include a prefix `v`. See here for an example: https://github.com/obsidianmd/obsidian-sample-plugin/releases
-- Upload the files `manifest.json`, `main.js`, `styles.css` as binary attachments. Note: The manifest.json file must be in two places, first the root path of your repository and also in the release.
-- Publish the release.
+* You get **10 requests per second per user**, and thousands per day.
+* Uploading images from Obsidian and setting them to “anyone with link → viewer” uses tiny requests — basically nothing.
 
-> You can simplify the version bump process by running `npm version patch`, `npm version minor` or `npm version major` after updating `minAppVersion` manually in `manifest.json`.
-> The command will bump version in `manifest.json` and `package.json`, and add the entry for the new version to `versions.json`
+You won’t ever hit a quota unless you’re uploading **thousands of images per minute**.
 
-## Adding your plugin to the community plugin list
+**No charges** are applied for:
 
-- Check the [plugin guidelines](https://docs.obsidian.md/Plugins/Releasing/Plugin+guidelines).
-- Publish an initial version.
-- Make sure you have a `README.md` file in the root of your repo.
-- Make a pull request at https://github.com/obsidianmd/obsidian-releases to add your plugin.
+* Uploading files you own.
+* Reading public files (`alt=media`).
+* Managing permissions.
 
-## How to use
+So: **Drive API = free** ✅
 
-- Clone this repo.
-- Make sure your NodeJS is at least v16 (`node --version`).
-- `npm i` or `yarn` to install dependencies.
-- `npm run dev` to start compilation in watch mode.
+---
 
-## Manually installing the plugin
+## 🚀 Quick Start
 
-- Copy over `main.js`, `styles.css`, `manifest.json` to your vault `VaultFolder/.obsidian/plugins/your-plugin-id/`.
+### Step 1 — Get the plugin (online)
 
-## Improve code quality with eslint (optional)
-- [ESLint](https://eslint.org/) is a tool that analyzes your code to quickly find problems. You can run ESLint against your plugin to find common bugs and ways to improve your code. 
-- To use eslint with this project, make sure to install eslint from terminal:
-  - `npm install -g eslint`
-- To use eslint to analyze this project use this command:
-  - `eslint main.ts`
-  - eslint will then create a report with suggestions for code improvement by file and line number.
-- If your source code is in a folder, such as `src`, you can use eslint with this command to analyze all files in that folder:
-  - `eslint ./src/`
+Install the plugin via the **Community Plugins** tab within Obsidian
+or clone/download this repo to your computer.
 
-## Funding URL
-
-You can include funding URLs where people who use your plugin can financially support it.
-
-The simple way is to set the `fundingUrl` field to your link in your `manifest.json` file:
-
-```json
-{
-    "fundingUrl": "https://buymeacoffee.com"
-}
+The important contents are in the following files:
 ```
 
-If you have multiple URLs, you can also do:
+manifest.json
+package.json
+main.ts
+README.md
 
-```json
-{
-    "fundingUrl": {
-        "Buy Me a Coffee": "https://buymeacoffee.com",
-        "GitHub Sponsor": "https://github.com/sponsors",
-        "Patreon": "https://www.patreon.com/"
-    }
-}
 ```
 
-## API Documentation
+### Alternative — Get the plugin (manual)
 
-See https://github.com/obsidianmd/obsidian-api
+🔮 How to Install Plugin Locally in Obsidian
+
+1. In your Obsidian vault folder, go to:
+```
+
+.obsidian/plugins/
+
+```
+and create a folder named:
+```
+
+obsidian-drive-image-uploader
+
+```
+2. Copy these files inside it:
+```
+
+manifest.json
+main.js
+README.md
+
+```
+3. Restart Obsidian or reload plugins.
+
+---
+
+### 🧰 Developer Notes (optional)
+
+- Built with **TypeScript + esbuild**
+- Main entry: `main.ts`
+- Commands:
+```bash
+npm install
+npm run dev   # live rebuild
+npm run build # minified build
+````
+
+* Output: `main.js` → copy into your vault plugin folder.
+
+---
+
+## 🧰 Step 2 — Google Cloud Setup (One-Time)
+
+You need a few keys so the plugin can talk to your Drive.  
+If you’ve never used Google Cloud, don’t worry — follow this carefully:
+
+---
+
+### 🗂️ Create a Project
+
+1. Go to **[https://console.cloud.google.com/](https://console.cloud.google.com/)**  
+   (Sign in with the Google account where you’ll store your images.)
+   ![](https://i.imgur.com/vhfz9xu.png)
+   ![](https://i.imgur.com/8cjOx0d.png)
+   
+2. On the top bar, click **Select Project → New Project**     
+   ![](https://i.imgur.com/LCr6pIo.png)
+   ![](https://i.imgur.com/0KXpFw2.png)
+   
+3. Give it a name like “Obsidian Drive Uploader”. Click **Create**.
+   ![](https://i.imgur.com/79vHqST.png)
+
+4. Go here,
+
+   ![](https://i.imgur.com/W5lmVvv.png)
+
+
+---
+
+### ⚙️ Enable the Google Drive API
+
+1. In the left menu, click **“APIs & Services → Enable APIs and Services.”**
+
+![](https://i.imgur.com/AMdhUOm.png)
+![](https://i.imgur.com/tV6oMye.png)
+
+2. Search for **“Google Drive API.”**
+   
+![](https://i.imgur.com/0ru4d37.png)
+
+4. Click **Enable.**
+   
+![](https://i.imgur.com/0XAZ2bv.png)
+
+
+This tells Google you’ll use Drive from an external app (our plugin).
+
+---
+
+### 🧾 Set up the OAuth Consent Screen
+
+1. Still under **APIs & Services**, open **“OAuth consent screen.”**
+   
+![](https://i.imgur.com/eex8goh.png)
+
+![](https://i.imgur.com/bio49s4.png)
+
+2. Fill these:
+   - **App name:** Drive Image Uploader
+   - **User support email:** your Gmail
+   - **Developer contact email:** your Gmail
+
+![](https://i.imgur.com/4CaTzRo.png)
+
+3. Choose **External**,
+   
+![](https://i.imgur.com/QTWVo1U.png)
+
+4. Click **Save and Continue** all the way — you don’t need to add scopes or test users. → click **Create.**
+   
+![](https://i.imgur.com/6MM4bXU.png)
+
+6. Done! This step just lets Google show a simple “Allow access” page when you connect.
+
+---
+
+### ✅ Required: Add the Drive scope
+
+After you create the consent screen:
+
+1. Go to **Google Auth Platform → Data access** → **Add or remove scopes**.
+![](https://i.imgur.com/mZKbQ3A.png)
+2. Click **Add scopes** and include:
+
+   ```
+   https://www.googleapis.com/auth/drive.file
+   ```
+
+   (This lets the plugin create & manage files **it** uploads only.)
+
+![](https://i.imgur.com/NFS2Srh.png)
+![](https://i.imgur.com/vIvQuHg.png)
+
+---
+
+### ✅ Required: Add yourself as a Test user
+
+While your app is in **Testing**, only test users can authorize:
+
+1. Go to **Google Auth Platform → Audience**.
+2. In **Test users**, click **➕ Add users**.
+![](https://i.imgur.com/wYUgStd.png)
+
+3. Add the Google account(s) you’ll use in Obsidian (e.g., `you@gmail.com`).
+![](https://i.imgur.com/y0tLiRB.png)
+
+> You don’t need to “Publish app.” Keeping it in **Testing** is fine for personal use.
+
+---
+### 🔑 Create OAuth Client (Get Your Client ID)
+
+After completing the OAuth Consent Screen, you need to create the actual credentials (the “keys”) that your plugin will use to connect to your Google Drive.
+
+1. Click here,
+   
+![](https://i.imgur.com/uvoaoKN.png)
+
+
+2. Or, in the left sidebar, go to **Google Auth Platform → Clients**. Click the **➕ Create Client** button.  
+   
+![](https://i.imgur.com/oz94Ysk.png)
+
+
+(Note: If you don’t see it, refresh the page and make sure you’re in the same project — e.g., “Obsidian Drive Uploader.”
+    1. Go to **APIs & Services → Credentials.**
+    2. Click **Create Credentials → OAuth client ID.**)
+
+3. Choose **Application type: “TVs and Limited Input”**
+4. Name it (e.g., “Obsidian Client).
+5. Click **Create.**
+   
+![](https://i.imgur.com/WWQ0PZ7.png)
+
+A popup appears — copy your:
+- **Client ID**
+- **Client Secret (if shown)**
+  
+![](https://i.imgur.com/ouZSgnj.png)
+
+These identify your plugin as “you” when connecting to Google Drive.— **copy both of these and save them somewhere safe**.
+You’ll later paste them into your Obsidian plugin’s settings later...
+
+✅ Done!  
+You’ve now created your OAuth client — the key that lets your Obsidian plugin upload files to your Drive under your account.
+
+---
+
+### 🧩 Create an API Key (for backup method)
+
+This key is used by the plugin’s **fallback system** — in case the standard `lh3.googleusercontent.com` link doesn’t load (for example, in some corporate or regional Google accounts).
+
+1. Use Left Panel: Go back to **APIs & Services → Credentials.** (Create Credentials → API key)
+
+![](https://i.imgur.com/JbaEF7R.png)
+
+2. How to create your API key (Leave everything as it is):
+   * **Name:** You can keep `API key 1` or rename it to `ObsidianBackupKey`.
+   * **Do NOT** check “Authenticate API calls through a service account.”
+   * Under **Application restrictions → None** ✅
+   * Under **API restrictions → Don’t restrict key** ✅
+   *(That’s important, because the plugin might call both the Drive API and the alt=media endpoint — unrestricted keeps it simple.)*
+2. Click **Create**.
+   
+![](https://i.imgur.com/w86TuRV.png)
+
+
+2. Copy the key (looks like `AIzaSy...`).
+   
+![](https://i.imgur.com/A6lrsw3.png)
+
+
+This one is for the *alt=media* fallback link.
+
+---
+### 🔗 (Optional) Pick a Drive folder for uploads
+
+1. Create a folder in Drive (e.g., `Obsidian_Image_Folder`).
+2. Get its ID from the URL (Share Link):
+
+   ```
+   https://drive.google.com/drive/folders/1YA0BxbQ9zNQVKg7q-gNxQsRAayGpdTjn
+                                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   ```
+
+   Paste `1YA0BxbQ9zNQVKg7q-gNxQsRAayGpdTjn` into **Target Drive Folder ID** in the plugin.
+3. (Optional) Make the folder “Anyone with the link → Viewer.”
+   The plugin also sets each uploaded file to public (if **Make files public** is on).
+
+---
+
+## 🔮 Step 3 — Install & Connect in Obsidian
+
+1. Open Obsidian.
+2. Go to **Settings → Community Plugins → Browse**
+3. Search for **“Drive Image Uploader”** and install it.
+4. In **Settings → Community Plugins**, enable “Drive Image Uploader.”
+
+![](https://i.imgur.com/wqcKiIF.png)
+
+5. Open its **Settings tab** and fill:
+
+| Field | What to paste |
+|-------|----------------|
+| **Google Client ID** | From your OAuth credentials |
+| **Google Client Secret** | (optional) if shown |
+| **Google API Key** | From your API key credentials |
+| **Target Drive Folder ID** | (optional) if you want uploads to a specific folder |
+| **Make files public** | Keep enabled so images render in notes |
+
+6. Click **Connect Google Drive.**  
+You’ll see a **code** and a **link** — open the link, log in, paste the code, and allow access.  
+
+![](https://i.imgur.com/GAAlgpT.png)
+![](https://i.imgur.com/NOE8WCp.png)
+
+After a few seconds, Obsidian should say:  
+✅ *“Google Drive connected”*
+
+---
+
+## 🖼️ Step 4 — Test It!
+
+1. Open any note.
+2. Paste an image (Ctrl+V) or drag it in.
+3. Wait a moment — your note should now contain:
+```
+
+![](https://lh3.googleusercontent.com/d/1AbCDeFgHiJkLmNo)
+
+````
+4. The image should render inside Obsidian’s preview.
+
+If the upload fails or you’re offline:
+- It tries the **alt=media** link.
+- If that fails too, the image is saved locally inside your vault under `DriveUploads/`.
+
+---
+
+## 🧩 How it Works
+
+| Step | Action | Result |
+|------|---------|--------|
+| 1 | You paste or drag an image | Plugin intercepts it |
+| 2 | It uploads to Google Drive using your OAuth token | File gets an ID |
+| 3 | Plugin makes file public | Anyone can view |
+| 4 | It inserts Markdown | `![](https://lh3.googleusercontent.com/d/FILE_ID)` |
+| 5 | If that fails | It tries `alt=media&key=API_KEY` |
+| 6 | Final fallback | Saves to local folder |
+
+---
+
+## 🧠 Notes & Tips
+
+- **`lh3.googleusercontent.com`** is Google’s CDN — the same server used by Photos — and works inside Obsidian.
+- **`alt=media`** is Google’s direct-download endpoint. Some corporate accounts block `lh3`, so this ensures compatibility.
+- **Local fallback** prevents losing pasted images when offline.
+- **Tokens** are stored only inside your Obsidian vault (in `data.json`) — keep your vault private.
+- **Public sharing:** only the files the plugin uploads are public; your Drive itself remains private.
+
+---
+
+## 🧯 Troubleshooting
+
+| Problem | Fix |
+|----------|-----|
+| ❌ Image not showing | Try reloading Preview mode |
+| ⚠️ "Authorization Error" | Reconnect Google Drive in settings |
+| 🚫 “alt=media” not working | Make sure file is “Anyone with the link → Viewer” |
+| 🕸️ CORS or iframe errors | Obsidian sandbox mode sometimes blocks certain domains — `lh3` should still work |
+| 🧱 Nothing happens on paste | Check Obsidian Console: `Ctrl + Shift + I → Console` for logs |
+
+---
+
+## 🔐 Safety & Privacy
+
+- Your Google credentials are stored locally, **never sent anywhere else**.
+- Uploaded files are placed in your Google Drive (your account, your data).
+- You can revoke the plugin’s access anytime at  
+[https://myaccount.google.com/permissions](https://myaccount.google.com/permissions)
+
+---
+
+## ❤️ Credits
+
+- Built using the [Obsidian Sample Plugin](https://github.com/obsidianmd/obsidian-sample-plugin)
+- Inspired by early community Imgur uploaders
+- Designed for people who want **full control** over their image hosting
+
+---
+
+### License
+
+MIT – use freely, improve, and share.
